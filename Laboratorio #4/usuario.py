@@ -4,24 +4,24 @@ from direccion import *
 class Usuario:
     #Atributos
 
-    def __init__(self, nombre: str = None, id: int = None, fecha_nacimiento: Fecha = Fecha(), 
-                 ciudad_nacimiento: str = None, tel: int = None, email: str = None, dir: Direccion = Direccion()):
+    def __init__(self, nombre: str = None, Id: int = None, fecha_nacimiento: Fecha = Fecha(), 
+                 ciudad_nacimiento: str = None, tel: int = None, email: str = None, dire: Direccion = Direccion()):
         
         self.__nombre = nombre
-        self.__id = id
+        self.__Id = Id
         self.__fecha_nacimiento = fecha_nacimiento
         self.__ciudad_nacimiento = ciudad_nacimiento
         self.__tel = tel
         self.__email = email
-        self.__dir = dir
+        self.__dire = dire
 
     #Setters
 
     def setNombre(self, nombre: str):
         self.__nombre = nombre
 
-    def setId(self, id: int):
-        self.__id = id
+    def setId(self, Id: int):
+        self.__Id = Id
 
     def setFecha_nacimiento(self, fecha: Fecha):
         self.__fecha_nacimiento = fecha
@@ -35,8 +35,8 @@ class Usuario:
     def setEmail(self, email: str):
         self.__email = email
 
-    def setDir(self, dir: Direccion):
-        self.__dir = dir
+    def setDir(self, dire: Direccion):
+        self.__dire = dire
         
     #getters
      
@@ -46,7 +46,7 @@ class Usuario:
      
     @property 
     def getId(self):
-        return self.__id
+        return self.__Id
 
      
     @property 
@@ -71,7 +71,7 @@ class Usuario:
  
     @property 
     def getDir(self):
-        return self.__dir
+        return self.__dire
     
     #Metodo toString()
     def __str__(self): 
