@@ -130,7 +130,6 @@ class Administrador(Investigador):
             node = node.getNext()
         ManejoTxt.guardar_empleados("C:/Users/andre/Documents/GitHub/EDD/practica/Empleados.txt")
         ManejoTxt.guardar_passwords("C:/Users/andre/Documents/GitHub/EDD/practica/Password.txt")
-            
     pass
 
 class Equipo():
@@ -175,7 +174,6 @@ class Sistema():
 
     
 class App():
-
     usuario = None
     
     def __init__(self):
@@ -186,67 +184,84 @@ class App():
      
     def main_loop(self):
         while True:
+            
+            print("Bienvenido al sistema de inventario")    
+            
             while self.usuario == None:
-                print("Bienvenido al sistema de inventario")    
                 inputId = input("Ingrese su cedula: ")
                 inputPassword = input("Ingrese su contraseña: ")
                 self.usuario = Sistema.login(inputId, inputPassword)
+                
+                if self.usuario == None:
+                    print("Cedula o contraseña incorrecta")
 
+            print("Bienvenido", self.usuario.nombre)
 
-            print("Bienvenido")
-            print("Usuario: ", self.usuario.nombre)
-            return
-
-            
-            
-            
-            if Sistema.verificarInfo(inputId, inputPassword):
-                if Sistema.verificarRol(inputId) == "administrador":
-                    print("Ingresaste como Administrador")
-                    print("\nMenu:"
-                          "\n1.Consultar Lista de Equipos"
-                          "\n2.Registrar nuevo Usuario"
-                          "\n3.Cambiar Contraseñas"
-                          "\n4.Eliminar Usuario"
-                          "\n5.Responder Solicitudes"
-                          "\n5.Salir")
-                    opcion = input("Elija la opción del Menu: ")
-                    if opcion == "1":
-                        pass
-                    elif opcion == "2":
-                        nombre = input("Ingrese el nombre del usuario: ")
-                        Id = input("Ingrese la cedula del usuario: ")
-                        fecha_nacimiento = Fecha(input("Ingrese el dia de nacimiento: "), input("Ingrese el mes de nacimiento: "), input("Ingrese el año de nacimiento: "))
-                        ciudad_nacimiento = input("Ingrese la ciudad de nacimiento: ")
-                        tel = input("Ingrese el telefono del usuario: ")
-                        email = input("Ingrese el correo del usuario: ")
-                        dire = Direccion(input("Ingrese la calle: "), input("Ingrese la nomenclatura: "), input("Ingrese el barrio: "), input("Ingrese la ciudad: "), input("Ingrese el edificio: "), input("Ingrese el apto: "))
-                        password = input("Ingrese la contraseña del usuario: ")
-                        tipo = input("Ingrese el tipo de usuario: ")
-                        Administrador.agregar_usuario(nombre, Id, fecha_nacimiento, ciudad_nacimiento, tel, email, dire, password, tipo)
-                        pass
-                    elif opcion == "3":
-                        cedula = input("Ingrese la cedula del usuario: ")
-                        password = input("Ingrese la nueva contraseña: ")
-                        Administrador.cambiar_password(cedula, password)
-                    elif opcion == "4":
-                        cedula = input("Ingrese la cedula del usuario: ")
-                        Administrador.eliminar_usuario(cedula)
-                        pass
-                    
-                else:
-                    print("Ingresaste como Investigador")
-                    print("\nMenu:"
-                          "\n1.Consultar Lista de Equipos"
-                          "\n2.Solicitar nuevo Equipo"
-                          "\n3.Solicitar eliminación de Equipo"
-                          "\n4.Verificar Estado de su Solicitud"
-                          "\n5.Salir")
-                    opcion = input("Elija la opción del Menu: ")
-                break
+            if Sistema.verificarRol(inputId) == "administrador":
+                self.menu_administrador()
             else:
-                print("Cedula o contraseña incorrecta")
-            break
+                self.menu_investigador()
+
+        
+    def menu_administrador(self):
+         while True:
+            print("--- Ingresaste como Administrador --- ")
+            
+            print("Menu:")
+            print("1.Consultar Lista de Equipos")
+            print("2.Registrar nuevo Usuario")
+            print("3.Cambiar Contraseñas")
+            print("4.Eliminar Usuario")
+            print("5.Responder Solicitudes")
+            print("6.Salir")
+
+            print(". . . . . . . . . . ")
+            
+            opcion = input("Elija la opción del Menu: ")
+
+            match opcion:
+                case '1':
+                    self.menuMensaje()
+                case '2':
+                    nombre = input("Ingrese el nombre del usuario: ")
+                    cedula = input("Ingrese la cedula del usuario: ")
+                    
+                    fecha_nacimiento = Fecha(input("Ingrese el dia de nacimiento: "), input("Ingrese el mes de nacimiento: "), input("Ingrese el año de nacimiento: "))
+                    ciudad_nacimiento = input("Ingrese la ciudad de nacimiento: ")
+                    tel = input("Ingrese el telefono del usuario: ")
+                    email = input("Ingrese el correo del usuario: ")
+                    dire = Direccion(input("Ingrese la calle: "), input("Ingrese la nomenclatura: "), input("Ingrese el barrio: "), input("Ingrese la ciudad: "), input("Ingrese el edificio: "), input("Ingrese el apto: "))
+                    password = input("Ingrese la contraseña del usuario: ")
+                    tipo = input("Ingrese el tipo de usuario: ")
+                    
+                    Administrador.agregar_usuario(nombre, cedula, fecha_nacimiento, ciudad_nacimiento, tel, email, dire, password, tipo)
+                case '3':
+                    cedula = input("Ingrese la cedula del usuario: ")
+                    password = input("Ingrese la nueva contraseña: ")
+                    Administrador.cambiar_password(cedula, password)
+                case '4':
+                    cedula = input("Ingrese la cedula del usuario: ")
+                    Administrador.eliminar_usuario(cedula)
+                case '5':
+                    pass
+                case '6':
+                    pass
+                case '7':
+                    print('Saliendo del sistema, hasta luego!')
+                    sys.exit()
+                case _:
+                    print('Opcion no valida')
+    
+    def menu_investigador(self):
+        print("Ingresaste como Investigador")
+        print("Menu:")
+        print("1.Consultar Lista de Equipos")
+        print("2.Solicitar nuevo Equipo")
+        print("3.Solicitar eliminación de Equipo")
+        print("4.Verificar Estado de su Solicitud")
+        print("5.Salir")
+        opcion = input("Elija la opción del Menu: ")
+        pass    
 
 
 app = App()
