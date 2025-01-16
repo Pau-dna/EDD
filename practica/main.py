@@ -2,77 +2,79 @@ from usuario import *
 from fecha import *
 from direccion import *
 from listas import *
+import sys
 
 class EnumRoles:
     ADMINISTRADOR = "Administrador"
     INVESTIGADOR = "Investigador"
 
-class ManejoTxt():
+class ManejadorTxt():
     
-    DLempleados = DoubleList()
-    DLpasswords = DoubleList()
+    pathEmpleados = "Empleados.txt"
+    pathPasswords = "Password.txt"
     
-    @classmethod
-    def cargarempleados(cls, nombre_archivo):
-        cls.cargarPasswords('C:/Users/andre/Documents/GitHub/EDD/practica/Password.txt')
+    def cargarempleados(self):
+        empleados = DoubleList()
+        passwords = self.cargarPasswords()
         
-        archivo = open(nombre_archivo, 'r')
-        
+        archivo = open(ManejadorTxt.pathEmpleados, 'r')
         for renglon in archivo:
             datosEmpleado = renglon.strip().split(' ')
             cedula = datosEmpleado[1]
-            password = cls.obtener_password(cedula)
-            tipo = cls.obtener_tipo(cedula)
+            password = self.obtener_password(passwords, cedula)
+            tipo = self.obtener_tipo(passwords, cedula)
             
-            empleado = Empleado(datosEmpleado[0], cedula, Fecha(datosEmpleado[2], datosEmpleado[3], datosEmpleado[4]), datosEmpleado[5], datosEmpleado[6], datosEmpleado[7], Direccion(datosEmpleado[8], datosEmpleado[9], datosEmpleado[10], datosEmpleado[11], datosEmpleado[12], datosEmpleado[13]), password, tipo)
-            cls.DLempleados.addLast(empleado)
+            fecha = Fecha(datosEmpleado[2], datosEmpleado[3], datosEmpleado[4])
+            direccion = Direccion(datosEmpleado[8], datosEmpleado[9], datosEmpleado[10], datosEmpleado[11], datosEmpleado[12], datosEmpleado[13])
+            empleado = Empleado(datosEmpleado[0], cedula, fecha, datosEmpleado[5], datosEmpleado[6], datosEmpleado[7], direccion, password, tipo)
+            empleados.addLast(empleado)
             
-    @classmethod
-    def cargarPasswords(cls, nombre_archivo):
-        archivo = open(nombre_archivo, 'r')
-        
+        return empleados
+            
+    def cargarPasswords(self):
+        archivo = open(ManejadorTxt.pathPasswords, 'r')
+        passwords = DoubleList()
         for renglon in archivo:
             datosPassword = renglon.strip().split(' ')
             password = Password(datosPassword[0], datosPassword[1], datosPassword[2])
-            cls.DLpasswords.addLast(password)
-    @classmethod
-    def obtener_password(cls, cedula):
-        node = cls.DLpasswords._head
+            passwords.addLast(password)
+        return passwords
+
+    def obtener_password(self, passwords, cedula):
+        node = passwords._head
         while node != None:
             if node.getData().Id == cedula:
                 return node.getData().password
             node = node.getNext()
         return None
-    @classmethod
-    def obtener_tipo(cls, cedula):
-        node = cls.DLpasswords._head
+
+    def obtener_tipo(self, passwords, cedula):
+        node = passwords._head
         while node != None:
             if node.getData().Id == cedula:
                 return node.getData().tipoEmpleado
             node = node.getNext()
         return None
-    @classmethod
-    def guardar_empleados(cls, nombre_archivo):
-        archivo = open(nombre_archivo, 'w')
-        node = ManejoTxt().DLempleados._head
+
+    def guardar_empleados(self, empleados):
+        archivo = open(ManejadorTxt.pathEmpleados, 'w')
+        node = empleados._head
         while node != None:
             empleado = node.getData()
-            line = f"{empleado.getNombre} {empleado.getId} {empleado.getFecha_nacimiento.get_Dia} {empleado.getFecha_nacimiento.get_Mes} {empleado.getFecha_nacimiento.get_A} {empleado.getCiudad_nacimiento} {empleado.getTel} {empleado.getEmail} {empleado.getDir.getCalle} {empleado.getDir.getNomenclatura} {empleado.getDir.getBarrio} {empleado.getDir.getCiudad} {empleado.getDir.getEdificio} {empleado.getDir.getApto}"
+            line = f"{empleado.getNombre()} {empleado.getId()} {empleado.getFecha_nacimiento().get_Dia()} {empleado.getFecha_nacimiento().get_Mes()} {empleado.getFecha_nacimiento().get_A()} {empleado.getCiudad_nacimiento()} {empleado.getTel()} {empleado.getEmail()} {empleado.getDir().getCalle()} {empleado.getDir().getNomenclatura()} {empleado.getDir().getBarrio()} {empleado.getDir().getCiudad()} {empleado.getDir().getEdificio()} {empleado.getDir().getApto()}"
             archivo.write(f"{line}\n")
             node = node.getNext()
         archivo.close()
-    @classmethod
-    def guardar_passwords(cls, nombre_archivo):
-        archivo = open(nombre_archivo, 'w')
-        node = ManejoTxt().DLempleados._head
+
+    def guardar_passwords(self, empleados):
+        archivo = open(ManejadorTxt.pathPasswords, 'w')
+        node = empleados._head
         while node != None:
             empleado = node.getData()
-            line = f"{empleado.getId} {empleado._password} {empleado._tipo}"
+            line = f"{empleado.getId()} {empleado.password} {empleado.tipo}"
             archivo.write(f"{line}\n")
             node = node.getNext()
         archivo.close()
-    
-    
     
 class Empleado(Usuario):
     def __init__(self, nombre, Id, fecha_nacimiento, ciudad_nacimiento, tel, email, dire, password, tipo):
@@ -106,30 +108,30 @@ class Investigador(Empleado):
 class Administrador(Investigador):
     @classmethod
     def cambiar_password(cls, cedula, password):
-        node = ManejoTxt().DLempleados._head
+        node = ManejadorTxt().empleados._head
         while node != None:
             if node.getData().getId == cedula:
                 node.getData().setPassword(password)
             node = node.getNext()
-        ManejoTxt.guardar_passwords("C:/Users/andre/Documents/GitHub/EDD/practica/Password.txt")
+        ManejadorTxt.guardar_passwords("C:/Users/andre/Documents/GitHub/EDD/practica/Password.txt")
     
     @classmethod
     def agregar_usuario(cls, nombre, Id, fecha_nacimiento, ciudad_nacimiento, tel, email, dire, password, tipo):
         empleado = Empleado(nombre, Id, fecha_nacimiento, ciudad_nacimiento, tel, email, dire, password, tipo)
-        ManejoTxt().DLempleados.addLast(empleado)
-        ManejoTxt.guardar_empleados("C:/Users/andre/Documents/GitHub/EDD/practica/Empleados.txt")
-        ManejoTxt.guardar_passwords("C:/Users/andre/Documents/GitHub/EDD/practica/Password.txt")
+        ManejadorTxt().empleados.addLast(empleado)
+        ManejadorTxt.guardar_empleados("C:/Users/andre/Documents/GitHub/EDD/practica/Empleados.txt")
+        ManejadorTxt.guardar_passwords("C:/Users/andre/Documents/GitHub/EDD/practica/Password.txt")
         pass
     
     @classmethod
     def eliminar_usuario(cls, cedula):
-        node = ManejoTxt().DLempleados._head
+        node = ManejadorTxt().empleados._head
         while node != None:
             if node.getData().getId == cedula:
-                ManejoTxt().DLempleados.remove(node)
+                ManejadorTxt().empleados.remove(node)
             node = node.getNext()
-        ManejoTxt.guardar_empleados("C:/Users/andre/Documents/GitHub/EDD/practica/Empleados.txt")
-        ManejoTxt.guardar_passwords("C:/Users/andre/Documents/GitHub/EDD/practica/Password.txt")
+        ManejadorTxt.guardar_empleados("C:/Users/andre/Documents/GitHub/EDD/practica/Empleados.txt")
+        ManejadorTxt.guardar_passwords("C:/Users/andre/Documents/GitHub/EDD/practica/Password.txt")
     pass
 
 class Equipo():
@@ -143,7 +145,7 @@ class Equipo():
 class Sistema():
     @classmethod
     def verificarInfo(cls, cedula, password):
-        node = ManejoTxt().DLempleados._head
+        node = ManejadorTxt().empleados._head
         while node != None:
             if node.getData().getId == cedula and node.getData()._password == password:
                 return True
@@ -151,7 +153,7 @@ class Sistema():
         return None
     @classmethod
     def verificarRol(cls, cedula):
-        node = ManejoTxt().DLempleados._head
+        node = ManejadorTxt().empleados._head
         while node != None:
             if node.getData().getId == cedula:
                 return node.getData()._tipo
@@ -160,8 +162,9 @@ class Sistema():
     
     @classmethod
     def login(cls, cedula, password):
-        empleados = ManejoTxt().DLempleados
-        passwords = ManejoTxt().DLpasswords
+        manejador = ManejadorTxt()
+        empleados = manejador.cargarempleados()
+        passwords = manejador.cargarPasswords()
         
         nodeEmpleados = empleados._head
         nodePasswords = passwords._head
@@ -177,9 +180,10 @@ class App():
     usuario = None
     
     def __init__(self):
-        manejador = ManejoTxt()
-        manejador.cargarempleados("C:/Users/andre/Documents/GitHub/EDD/practica/Empleados.txt")
-        manejador.DLempleados.printData()
+        serializador = ManejadorTxt()
+        
+        empleados = serializador.cargarempleados()
+        empleados.printData()
         pass
      
     def main_loop(self):
@@ -197,11 +201,16 @@ class App():
 
             print("Bienvenido", self.usuario.nombre)
 
-            if Sistema.verificarRol(inputId) == "administrador":
+            print(f"Userr: {self.usuario.tipo}")
+            if self.usuario.tipo == "administrador":
                 self.menu_administrador()
             else:
                 self.menu_investigador()
 
+    def mostrarListaEquipos(self):
+        
+        
+        pass
         
     def menu_administrador(self):
          while True:
@@ -235,6 +244,7 @@ class App():
                     tipo = input("Ingrese el tipo de usuario: ")
                     
                     Administrador.agregar_usuario(nombre, cedula, fecha_nacimiento, ciudad_nacimiento, tel, email, dire, password, tipo)
+                    
                 case '3':
                     cedula = input("Ingrese la cedula del usuario: ")
                     password = input("Ingrese la nueva contraseña: ")
@@ -245,8 +255,6 @@ class App():
                 case '5':
                     pass
                 case '6':
-                    pass
-                case '7':
                     print('Saliendo del sistema, hasta luego!')
                     sys.exit()
                 case _:
@@ -262,7 +270,6 @@ class App():
         print("5.Salir")
         opcion = input("Elija la opción del Menu: ")
         pass    
-
 
 app = App()
 app.main_loop()
